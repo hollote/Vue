@@ -6,7 +6,7 @@ Vue.use(VueI18n);
 import translationsEn from './en';
 import translationsRu from './ru';
 
-export const defaultTranslation = navigator.language;
+export const defaultTranslation = localStorage.getItem('_lang') || navigator.language;
 export const translations = {
   'en-US': translationsEn,
   'ru-RU': translationsRu

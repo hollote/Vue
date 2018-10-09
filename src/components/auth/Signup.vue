@@ -3,25 +3,31 @@
     <div class="signup-form">
       <form @submit.prevent="onSubmit">
         <div class="input" :class="{invalid: $v.email.$error}">
-          <label for="email">Mail</label>
+          <label for="email">{{$t('common.email')}}</label>
           <input
               type="email"
               id="email"
               @blur="$v.email.$touch()"
-              v-model="email">
-          <p v-if="!$v.email.email"> please provide correct email</p>
-          <p v-if="!$v.email.required"> not empty </p>
+              v-model="email"
+              autocomplete="email">
+          <p v-if="!$v.email.email">{{$t('errorMessages.email')}}</p>
+          <p v-if="!$v.email.required">{{$t('errorMessages.required')}}</p>
         </div>
         <div class="input" :class="{invalid: $v.password.$error}">
-          <label for="password">Password</label>
+          <label for="password">{{$t('common.password')}}</label>
           <input
               type="password"
               id="password"
               @blur="$v.password.$touch()"
-              v-model="password">
+              v-model="password"
+              autocomplete="password">
+          <p v-if="!$v.password.minLength">{{$t('errorMessages.minLength', {min:
+            $v.password.$params.minLength.min})}}</p>
+          <p v-if="!$v.password.required">{{$t('errorMessages.required')}}</p>
         </div>
+        <p v-if="serverErr === 'OPERATION_NOT_ALLOWED'">{{$t('errorMessages.registerDisabled')}}</p>
         <div class="submit">
-          <button type="submit" :disabled="$v.$invalid">Submit</button>
+          <button type="submit" :disabled="$v.$invalid">{{$t('common.submit')}}</button>
         </div>
       </form>
     </div>
@@ -34,8 +40,9 @@
   export default {
     data() {
       return {
-        email: "",
-        password: "",
+        email: '',
+        password: '',
+        serverErr: ''
       };
     },
     methods: {
@@ -44,8 +51,13 @@
           email: this.email,
           password: this.password,
         };
-        console.log(formData);
-        // this.$store.dispatch("signup", formData);
+        this.$store.dispatch('auth/register', {email: formData.email, password: formData.password})
+        .then(() => {
+          this.$router.push('/');
+        })
+        .catch(err => {
+          this.serverErr = err.response.data.error.message;
+        })
       }
     },
     validations: {
@@ -61,7 +73,7 @@
   };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .signup-form {
     width: 400px;
     margin: 30px auto;
@@ -72,66 +84,23 @@
 
   .input {
     margin: 10px auto;
-  }
-
-  .input label {
-    display: block;
-    color: #4e4e4e;
-    margin-bottom: 6px;
-  }
-
-  .input.inline label {
-    display: inline;
-  }
-
-  .input input {
-    font: inherit;
-    width: 100%;
-    padding: 6px 12px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-  }
-
-  .input.inline input {
-    width: auto;
-  }
-
-  .input input:focus {
-    outline: none;
-    border: 1px solid #521751;
-    background-color: #eee;
-  }
-
-  .input select {
-    border: 1px solid #ccc;
-    font: inherit;
-  }
-
-  .input.invalid label {
-    color: #b40002;
-  }
-
-  .input.invalid input {
-    border: 1px solid #b40002;
-    background: #ff6a59;
-  }
-
-  .hobbies button {
-    border: 1px solid #521751;
-    background: #521751;
-    color: white;
-    padding: 6px;
-    font: inherit;
-    cursor: pointer;
-  }
-
-  .hobbies button:hover,
-  .hobbies button:active {
-    background-color: #8d4288;
-  }
-
-  .hobbies input {
-    width: 90%;
+    label {
+      display: block;
+      color: #4e4e4e;
+      margin-bottom: 6px;
+    }
+    input {
+      font: inherit;
+      width: 100%;
+      padding: 6px 12px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      &:focus {
+        outline: none;
+        border: 1px solid #521751;
+        background-color: #eee;
+      }
+    }
   }
 
   .submit button {
@@ -140,20 +109,21 @@
     padding: 10px 20px;
     font: inherit;
     cursor: pointer;
-  }
-
-  .submit button:hover,
-  .submit button:active {
-    background-color: #521751;
-    color: white;
-  }
-
-  .submit button[disabled],
-  .submit button[disabled]:hover,
-  .submit button[disabled]:active {
-    border: 1px solid #ccc;
-    background-color: transparent;
-    color: #ccc;
-    cursor: not-allowed;
+    &:hover, &:active {
+      background-color: #521751;
+      color: white;
+    }
+    &[disabled] {
+      border: 1px solid #ccc;
+      background-color: transparent;
+      color: #ccc;
+      cursor: not-allowed;
+      &:hover, &:active {
+        border: 1px solid #ccc;
+        background-color: transparent;
+        color: #ccc;
+        cursor: not-allowed;
+      }
+    }
   }
 </style>

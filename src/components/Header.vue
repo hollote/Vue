@@ -5,13 +5,16 @@
         <img alt="Logo" src="../assets/logo.png">
       </router-link>
       <div class="navbar-nav mr-auto">
-        <router-link class="nav-item nav-link" tag="a" to="/about">About</router-link>
-        <router-link v-if="!auth" class="nav-item nav-link" active-class="active" tag="a" to="/signup">Sign Up
+        <router-link class="nav-item nav-link" tag="a" to="/about">{{$t('header.about')}}</router-link>
+        <router-link v-if="!auth" class="nav-item nav-link" active-class="active" tag="a" to="/signup">{{$t('header.register')}}
         </router-link>
-        <router-link v-if="!auth" class="nav-item nav-link" active-class="active" tag="a" to="/signin">Sign In
+        <router-link v-if="!auth" class="nav-item nav-link" active-class="active" tag="a" to="/signin">{{$t('header.login')}}
         </router-link>
+        <router-link class="nav-item nav-link" active-class="active" tag="a" to="/dashboard">{{$t('header.dashboard')}}
+        </router-link>
+        <button v-if="auth" class="btn btn-primary" @click="onLogout">{{$t('common.logout')}}</button>
       </div>
-      <div class="navbar-nav">
+      <div class="navbar-nav" v-if="locales.length > 1">
         <language-selector></language-selector>
       </div>
     </nav>
@@ -19,15 +22,24 @@
 </template>
 
 <script>
-  import LanguageSelector from "@/components/LanguageSelector";
+  import LanguageSelector from "./LanguageSelector";
 
   export default {
     components: {
       LanguageSelector
     },
+    methods: {
+      onLogout() {
+        this.$router.push('/signin');
+        this.$store.dispatch('auth/logout');
+      }
+    },
     computed: {
       auth() {
-        return false;
+        return this.$store.getters['auth/isAuthenticated'];
+      },
+      locales() {
+        return this.$store.getters['lang/availableLocales'];
       }
     }
   }

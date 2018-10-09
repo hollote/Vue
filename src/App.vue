@@ -22,20 +22,23 @@
       }
     },
     created() {
-      //TODO: setup initial state of app here (lang, user login, etc.)
       return new Promise(resolve => {
-        this.initialized = true;
-        console.log('initialized');
-        resolve(true);
+        this.$store.dispatch('auth/tryAutoLogin').then(() => {
+          this.initialized = true;
+          console.log('initialized');
+          resolve(true);
+        });
       });
     }
   }
+  //TODO: fix on navigate explicit on login page when logged in (have to me redirect)
 </script>
 
 <style scoped lang="scss">
   .main-header {
     height: 10vh;
   }
+
   .main-container {
     height: 90vh;
   }

@@ -3,6 +3,7 @@ import { defaultTranslation, translations } from '../../translations/index';
 const state = {
   locale: defaultTranslation,
   locales: Object.keys(translations)
+  //TODO: change initialization to method?
 };
 
 const getters = {
@@ -15,7 +16,10 @@ const mutations = {
 };
 
 const actions = {
-  setLocale: ({commit}, payload) => commit('setLocale', payload)
+  setLocale: ({commit}, payload) => {
+    localStorage.setItem('_lang', payload);
+    commit('setLocale', payload);
+  }
 };
 
 export default {
